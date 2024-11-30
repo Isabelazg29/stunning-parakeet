@@ -1,0 +1,15 @@
+﻿<div>
+    <p class="text-center">¿Estás seguro de que deseas eliminar la habitación <strong>@Model.NombreHabitacion</strong>?</p>
+    @if (ViewData["ImageDataURL"] != null)
+    {
+        <div class="text-center">
+            <img src="@ViewData["ImageDataURL"]" alt="Imagen de la habitación" class="img-fluid mb-3" />
+        </div>
+    }
+    <form method="post" asp-action="DeleteConfirmed" asp-route-id="@Model.Idhabitacion" onsubmit="return submitDeleteForm(this);">
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-danger me-2">Eliminar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+    </form>
+</div>

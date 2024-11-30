@@ -1,0 +1,348 @@
+﻿@model Glamping_Addventure2.Models.Reserva
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Reserva</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdReserva" />
+            <div class="form-group">
+                <label asp-for="NroDocumentoCliente" class="control-label"></label>
+                <select asp-for="NroDocumentoCliente" class="form-control" asp-items="ViewBag.NroDocumentoCliente"></select>
+                <span asp-validation-for="NroDocumentoCliente" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="NombreCliente">Nombre:</label>
+                <input type="text" id="NombreCliente" name="NombreCliente" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label for="ApellidoCliente">Apellido:</label>
+                <input type="text" id="ApellidoCliente" name="ApellidoCliente" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label for="TelefonoCliente">Teléfono:</label>
+                <input type="text" id="TelefonoCliente" name="TelefonoCliente" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label hidden for="CorreoCliente">
+                    Correo:
+                </label>
+                <input type="text" id="CorreoCliente" name="CorreoCliente" class="form-control" hidden readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaReserva" class="control-label"></label>
+                <input asp-for="FechaReserva" class="form-control" readonly />
+                <span asp-validation-for="FechaReserva" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaInicio" class="control-label"></label>
+                <input asp-for="FechaInicio" class="form-control" type="date" required />
+                <span asp-validation-for="FechaInicio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaFinalizacion" class="control-label"></label>
+                <input asp-for="FechaFinalizacion" class="form-control" type="date" require />
+                <span asp-validation-for="FechaFinalizacion" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="paquete">Paquetes :</label>
+                <select id="paquete" name="paqueteId" class="form-control">
+
+                    @if (ViewBag.Paquetes != null)
+                    {
+                        @foreach (var paquete in Model.DetalleReservaPaquetes)
+                        {
+                            <option value="@paquete.IdpaqueteNavigation.NombrePaquete" data-precio="@paquete.IdpaqueteNavigation.Precio">@paquete.IdpaqueteNavigation.NombrePaquete</option>
+                        }
+                    }
+                    else
+                    {
+                        <option>No hay paquetes disponibles</option>
+                    }
+
+
+
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="precioPaquete">Precio del paquete:</label>
+                <input type="text" id="precioPaquete" name="preciopaquete" class="form-control" readonly />
+            </div>
+
+            <div class="container">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="servicio">Servicios Disponibles:</label>
+                        <select id="servicio" name="servicioids" class="form-control">
+                            @if (ViewBag.Servicios != null)
+                            {
+                                foreach (var servicio in ViewBag.Servicios)
+                                {
+                                    <option value="@servicio.Idservicio" data-precio="@servicio.Costo">@servicio.NombreServicio</option>
+                                }
+                            }
+                            else
+                            {
+                                <option>No hay servicios disponibles</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" id="agregarServicio" class="btn btn-success">Agregar Servicio</button>
+                    </div>
+                </div>
+                <table class="table" id="tablaServicios">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Servicio</th>
+                            <th>Costo</th>
+                            <th>Cantidad</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var servicio in Model.DetalleReservaServicios)
+                        {
+                            <tr>
+                                <td>@servicio.IdservicioNavigation.NombreServicio</td>
+                                <td>@servicio.IdservicioNavigation.Costo</td>
+                                <td>
+                                    <input type="number" name="CantidadesServicios" value="@servicio.Cantidad" class="form-control" />
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm eliminarServicio">Eliminar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="form-group">
+                    <label asp-for="SubTotal" class="control-label"></label>
+                    <input asp-for="SubTotal" class="form-control" />
+                    <span asp-validation-for="SubTotal" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Descuento" class="control-label"></label>
+                    <input asp-for="Descuento" class="form-control" />
+                    <span asp-validation-for="Descuento" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Iva" class="control-label"></label>
+                    <input asp-for="Iva" class="form-control" />
+                    <span asp-validation-for="Iva" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MontoTotal" class="control-label"></label>
+                    <input asp-for="MontoTotal" class="form-control" />
+                    <span asp-validation-for="MontoTotal" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MetodoPago" class="control-label"></label>
+                    <select asp-for="MetodoPago" class="form-control" asp-items="ViewBag.MetodoPago"></select>
+                    <span asp-validation-for="MetodoPago" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IdEstadoReserva" class="control-label" hidden></label>
+                    <select asp-for="IdEstadoReserva" class="form-control" asp-items="ViewBag.IdEstadoReserva" hidden></select>
+                    <span asp-validation-for="IdEstadoReserva" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="guaardar" class="btn btn-primary" />
+                </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">
+        atras
+
+    </a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+
+        // Validación y restricciones para fechas
+        document.getElementById("fechaInicio").addEventListener("change", function () {
+            const fechaInicio = this.value;
+            const fechaFinInput = document.getElementById("fechaFin");
+
+            if (fechaInicio) {
+                const fechaFinMin = new Date(fechaInicio);
+                fechaFinMin.setDate(fechaFinMin.getDate() + 1);
+                fechaFinInput.min = fechaFinMin.toISOString().split("T")[0];
+            } else {
+                fechaFinInput.min = "";
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Función para actualizar los totales
+            function actualizarTotales() {
+                let precioPaquete = parseFloat($('#precioPaquete').val()) || 0;
+                let subtotalServicios = 0;
+
+                // Calcular el subtotal de los servicios
+                $('#tablaServicios tbody tr').each(function () {
+                    let filaSubtotal = parseFloat($(this).find('.subtotal').text().replace('$', '')) || 0;
+                    subtotalServicios += filaSubtotal;
+                });
+
+                // Calcular el subtotal general (paquete + servicios)
+                let subtotal = precioPaquete + subtotalServicios;
+                $('#SubTotal').val(subtotal);
+
+                // Calcular el descuento (10%)
+                let descuento = Math.floor(subtotal * 0.10);
+                $('#Descuento').val(descuento);
+
+                // Calcular el IVA (12%)
+                let iva = Math.floor(subtotal * 0.12);
+                $('#Iva').val(iva);
+
+                // Calcular el monto total
+                let montoTotal = 300000 + subtotal + iva - descuento;
+                $('#MontoTotal').val(Math.floor(montoTotal)); // Eliminar decimales
+            }
+
+            // Función para actualizar el campo oculto con los servicios seleccionados
+            function actualizarCampoDetalleServicios() {
+                let servicios = [];
+
+                $('#tablaServicios tbody tr').each(function () {
+                    let servicio = {
+                        IdServicio: $(this).data('id-servicio'),
+                        Cantidad: parseInt($(this).find('.cantidad').val()) || 1,
+                        Precio: parseFloat($(this).find('td:nth-child(2)').text().replace('$', '')) || 0,
+                        Subtotal: parseFloat($(this).find('.subtotal').text().replace('$', '')) || 0
+                    };
+                    servicios.push(servicio);
+                });
+
+                // Convertir los datos a JSON y asignarlos al campo oculto
+                $('#detalleServicios').val(JSON.stringify(servicios));
+            }
+
+            // Mostrar el precio del paquete seleccionado
+            $('#paquete').change(function () {
+                let precioPaquete = parseFloat($(this).find(':selected').data('precio')) || 0;
+                $('#precioPaquete').val(precioPaquete);
+                actualizarTotales();
+            });
+
+            // Agregar servicios a la tabla y eliminarlos de la lista
+            $('#agregarServicio').click(function () {
+                let selectedService = $('#servicio option:selected');
+                let nombreServicio = selectedService.text();
+                let precioServicio = parseFloat(selectedService.data('precio')) || 0;
+                let idServicio = selectedService.val();
+                let cantidad = 1;
+
+                if (nombreServicio && precioServicio) {
+                    let subtotal = precioServicio * cantidad;
+
+                    // Crear una nueva fila en la tabla
+                    let nuevaFila = `
+                            <tr data-id-servicio="${idServicio}">
+                                <td>${nombreServicio}</td>
+                                <td>$${precioServicio}</td>
+                                <td><input type="number" class="form-control cantidad" value="${cantidad}" min="1" style="width: 70px;"></td>
+                                <td class="subtotal">$${subtotal}</td>
+                                <td><button type="button" class="btn btn-danger btn-sm eliminarServicio">Eliminar</button></td>
+                            </tr>
+                        `;
+
+                    $('#tablaServicios tbody').append(nuevaFila);
+
+                    // Eliminar el servicio del select
+                    selectedService.remove();
+
+                    actualizarTotales();
+                    actualizarCampoDetalleServicios(); // Actualizar campo oculto
+                }
+            });
+
+            // Actualizar totales y campo oculto al cambiar la cantidad
+            $('#tablaServicios').on('change', '.cantidad', function () {
+                let fila = $(this).closest('tr');
+                let precio = parseFloat(fila.find('td:nth-child(2)').text().replace('$', '')) || 0;
+                let cantidad = parseInt($(this).val()) || 1;
+                let subtotal = precio * cantidad;
+
+                fila.find('.subtotal').text('$' + subtotal);
+                actualizarTotales();
+                actualizarCampoDetalleServicios(); // Actualizar campo oculto
+            });
+
+            // Eliminar servicio de la tabla y devolverlo al select
+            $('#tablaServicios').on('click', '.eliminarServicio', function () {
+                let fila = $(this).closest('tr');
+                let idServicio = fila.data('id-servicio');
+                let nombreServicio = fila.find('td:nth-child(1)').text();
+                let precioServicio = parseFloat(fila.find('td:nth-child(2)').text().replace('$', ''));
+
+                // Agregar de nuevo el servicio al select
+                $('#servicio').append(`<option value="${idServicio}" data-precio="${precioServicio}">${nombreServicio}</option>`);
+
+                // Eliminar la fila
+                fila.remove();
+
+                actualizarTotales();
+                actualizarCampoDetalleServicios(); // Actualizar campo oculto
+            });
+
+            // Inicializar cálculo al cargar la página
+            $('#paquete').change();
+        });
+    </script>
+
+
+    <script>
+        document.getElementById("NroDocumentoCliente").addEventListener("blur", function () {
+            var documento = this.value;
+
+            if (documento) {
+                // Ajusta la URL según tu configuración de rutas
+                fetch(`/Reservas/ObtenerClientePorDocumento?documento=${encodeURIComponent(documento)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Llena los campos con la información del cliente
+                            document.getElementById("NombreCliente").value = data.data.nombre;
+                            document.getElementById("ApellidoCliente").value = data.data.apellido;
+                            document.getElementById("CorreoCliente").value = data.data.correo; // Corregido el nombre del campo
+                            document.getElementById("TelefonoCliente").value = data.data.telefono;
+                        } else {
+                            // Muestra el modal si el cliente no existe
+                            $('#clienteNoExisteModal').modal('show');
+
+                            // Limpia los campos si no se encuentra el cliente
+                            document.getElementById("NombreCliente").value = "";
+                            document.getElementById("ApellidoCliente").value = "";
+                            document.getElementById("CorreoCliente").value = "";
+                            document.getElementById("TelefonoCliente").value = "";
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+            }
+        });
+    </script>
+}

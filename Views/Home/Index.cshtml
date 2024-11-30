@@ -1,0 +1,313 @@
+﻿@{
+    ViewData["Title"] = "Dashboar";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome @ViewData["nombreUsuario"]</h1>
+</div>
+
+<div class="row mt-2">
+
+    <div class="col-sm-6">
+
+        <div class="card">
+            <div class="card-header">Reservas de los ultimos 5 dias</div>
+            <div class="card-body">
+                <canvas id="chartReservas" style="max-height:250px"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6">
+
+        <div class="card">
+            <div class="card-header">Paquetes mas vendidos</div>
+            <div class="card-body">
+                <canvas id="chartPaquetes" style="max-height:250px"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<br />
+
+<div class="row mt-2">
+
+    <div class="col-sm-6">
+
+        <div class="card">
+            <div class="card-header">Servicios adicionales mas vendidos</div>
+            <div class="card-body">
+                <canvas id="chartServicios" style="max-height:250px"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6">
+
+        <div class="card">
+            <div class="card-header">Cantidad de personas en los ultimos 5 dias</div>
+            <div class="card-body">
+                <canvas id="chartPaquetes" style="max-height:250px"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+                function resumenReserva() {
+            fetch("Home/resumenReserva")
+                .then((response) => {
+                    return response.ok ? response.json() : Promise.reject(response);
+                })
+                .then((dataJson) => {
+                    console.log("Datos recibidos del controlador:", dataJson);
+
+                    // Mapeo de las propiedades con los nombres correctos
+                    const labels = dataJson.map((item) => item.fechaReservaFormatted);
+                    const values = dataJson.map((item) => item.cantidad);
+
+                    console.log("Etiquetas (fechas):", labels);  // Verifica que las fechas estén aquí
+                    console.log("Valores (cantidad):", values);   // Verifica que las cantidades estén aquí
+
+                    // Verifica si alguna propiedad es undefined
+                    if (labels.includes(undefined) || values.includes(undefined)) {
+                        console.log("Error en el mapeo de datos. Revisa los nombres de las propiedades.");
+                    }
+
+                    const data = {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Cantidad',
+                            data: values,
+                            backgroundColor: 'rgb(54, 162, 235)',
+                            borderWidth: 1
+                        }]
+                    };
+
+                    const config = {
+                        type: 'bar',
+                        data: data,
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        },
+                    };
+
+                    const canvasBarras = document.getElementById("chartReservas");
+                    const graficoBarras = new Chart(canvasBarras, config);
+                })
+                .catch((error) => {
+                    console.log("Error al obtener datos:", error);
+                });
+
+
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", resumenReserva);
+    </script>
+
+    @* //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////// *@
+
+    <script>
+        function resumenPaquete() {
+            // Realiza una solicitud al endpoint resumenPaquete
+            fetch("Home/resumenPaquete")
+                .then((response) => {
+                    // Verifica si la respuesta es válida
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        console.error("Error en la respuesta del servidor:", response.status);
+                        return Promise.reject(response);
+                    }
+                })
+                .then((dataJson) => {
+                    // Depura los datos en la consola
+                    console.log("Datos recibidos del controlador (resumenPaquete):", dataJson);
+
+                    // Mapea los datos para generar etiquetas y valores
+                    const labels = dataJson.map((item) => item.nombrePaquete); // Mapea los nombres de los paquetes
+                    const values = dataJson.map((item) => item.cantidad);      // Mapea las cantidades
+
+                    // Verifica si los datos tienen valores válidos
+                    console.log("Etiquetas (nombres de paquetes):", labels);
+                    console.log("Valores (cantidad de reservas):", values);
+
+                    // Verifica si alguna propiedad es undefined
+                    if (labels.includes(undefined) || values.includes(undefined)) {
+                        console.error("Error en el mapeo de datos. Revisa los nombres de las propiedades.");
+                        return;
+                    }
+
+                    // Configuración de datos para el gráfico de pastel
+                    const data = {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Paquetes más vendidos',
+                            data: values,
+                            backgroundColor: [
+                                'rgb(255, 99, 132)',
+                                'rgb(54, 162, 235)',
+                                'rgb(255, 206, 86)',
+                                'rgb(75, 192, 192)',
+                                'rgb(153, 102, 255)',
+                                'rgb(255, 159, 64)' // Colores adicionales si hay más de 5 paquetes
+                            ],
+                            hoverOffset: 4 // Efecto al pasar el ratón por encima
+                        }]
+                    };
+
+                    // Configuración del gráfico
+                    const config = {
+                        type: 'pie', // Tipo de gráfico: pastel
+                        data: data,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top', // Posición de la leyenda
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            const dataset = tooltipItem.dataset;
+                                            const total = dataset.data.reduce((a, b) => a + b, 0); // Calcula el total
+                                            const currentValue = dataset.data[tooltipItem.dataIndex];
+                                            const percentage = ((currentValue / total) * 100).toFixed(2); // Porcentaje
+                                            return `${tooltipItem.label}: ${currentValue} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    // Renderiza el gráfico en el canvas
+                    const canvasPaquetes = document.getElementById("chartPaquetes");
+
+                    // Si ya existe un gráfico, destrúyelo antes de crear uno nuevo
+                    if (window.graficoPaquetes) {
+                        window.graficoPaquetes.destroy();
+                    }
+
+                    window.graficoPaquetes = new Chart(canvasPaquetes, config);
+                })
+                .catch((error) => {
+                    console.error("Error al obtener datos del servidor:", error);
+                });
+        }
+
+        // Llama a la función al cargar la página
+        document.addEventListener("DOMContentLoaded", resumenPaquete);
+    </script>
+
+    @* //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////// *@
+
+    <script>
+        function resumenServicios() {
+            // Realiza una solicitud al endpoint resumenServicios
+            fetch("Home/resumenServicios")
+                .then((response) => {
+                    // Verifica si la respuesta es válida
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        console.error("Error en la respuesta del servidor:", response.status);
+                        return Promise.reject(response);
+                    }
+                })
+                .then((dataJson) => {
+                    // Depura los datos en la consola
+                    console.log("Datos recibidos del controlador (resumenServicios):", dataJson);
+
+                    // Mapea los datos para generar etiquetas y valores
+                    const labels = dataJson.map((item) => item.nombreServicio); // Mapea los nombres de los servicios
+                    const values = dataJson.map((item) => item.cantidad);       // Mapea las cantidades
+
+                    // Verifica si los datos tienen valores válidos
+                    console.log("Etiquetas (nombres de servicios):", labels);
+                    console.log("Valores (cantidad de reservas):", values);
+
+                    // Verifica si alguna propiedad es undefined
+                    if (labels.includes(undefined) || values.includes(undefined)) {
+                        console.error("Error en el mapeo de datos. Revisa los nombres de las propiedades.");
+                        return;
+                    }
+
+                    // Configuración de datos para el gráfico de pastel
+                    const data = {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Servicios más vendidos',
+                            data: values,
+                            backgroundColor: [
+                                'rgb(153, 102, 255)',
+                                'rgb(255, 159, 64)',
+                                'rgb(54, 162, 235)',
+                                'rgb(255, 206, 86)',
+                                'rgb(75, 192, 192)',
+                                'rgb(255, 99, 132)'
+                                 // Colores adicionales si hay más de 5 servicios
+                            ],
+                            hoverOffset: 4 // Efecto al pasar el ratón por encima
+                        }]
+                    };
+
+                    // Configuración del gráfico
+                    const config = {
+                        type: 'pie', // Tipo de gráfico: pastel
+                        data: data,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top', // Posición de la leyenda
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            const dataset = tooltipItem.dataset;
+                                            const total = dataset.data.reduce((a, b) => a + b, 0); // Calcula el total
+                                            const currentValue = dataset.data[tooltipItem.dataIndex];
+                                            const percentage = ((currentValue / total) * 100).toFixed(2); // Porcentaje
+                                            return `${tooltipItem.label}: ${currentValue} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    // Renderiza el gráfico en el canvas
+                    const canvasServicios = document.getElementById("chartServicios");
+
+                    // Si ya existe un gráfico, destrúyelo antes de crear uno nuevo
+                    if (window.graficoServicios) {
+                        window.graficoServicios.destroy();
+                    }
+
+                    window.graficoServicios = new Chart(canvasServicios, config);
+                })
+                .catch((error) => {
+                    console.error("Error al obtener datos del servidor:", error);
+                });
+        }
+
+        // Llama a la función al cargar la página
+        document.addEventListener("DOMContentLoaded", resumenServicios);
+    </script>
+
+}

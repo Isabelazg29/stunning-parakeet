@@ -1,0 +1,245 @@
+﻿@model Glamping_Addventure2.Models.Habitacion
+
+@{
+    ViewData["Title"] = "Editar Habitacion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="NombreHabitacion">Nombre de la Habitación</label>
+            <input asp-for="NombreHabitacion" class="form-control" />
+            <span asp-validation-for="NombreHabitacion" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ImagenHabitacion">Imagen de la Habitación</label>
+            <input type="file" name="ImageFile" class="form-control" />
+
+            @if (Model.ImagenHabitacion != null)
+            {
+                <div>
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.ImagenHabitacion)" alt="Imagen Actual" style="max-width:200px;" />
+                    <p>Imagen actual (si no seleccionas una nueva imagen, esta se mantendrá).</p>
+                </div>
+            }
+
+            <span asp-validation-for="ImagenHabitacion" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Descripcion">Descripción</label>
+            <textarea asp-for="Descripcion" class="form-control"></textarea>
+            <span asp-validation-for="Descripcion" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Costo">Costo</label>
+            <input asp-for="Costo" type="number" step="0.01" min="0" class="form-control" />
+            <span asp-validation-for="Costo" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="IdtipodeHabitacion">Tipo de Habitación</label>
+            <select asp-for="IdtipodeHabitacion" asp-items="ViewBag.IdtipodeHabitacion" class="form-control"></select>
+            <span asp-validation-for="IdtipodeHabitacion" class="text-danger"></span>
+        </div>
+
+        <div class="form-group form-check">
+            <input class="form-check-input" type="checkbox" name="Estado" id="Estado" checked="@(Model?.Estado ?? false)" required />
+            <label asp-for="Estado" class="form-check-label">Confirmar Estado</label>
+            <span asp-validation-for="Estado" class="text-danger"></span>
+        </div>
+
+        <h4>Muebles Disponibles</h4>
+        <div class="muebles-container">
+            @foreach (var mueble in ViewData["MueblesDisponibles"] as List<Mueble>)
+            {
+                <div class="mueble-item">
+                    <label>@mueble.NombreMueble</label>
+                    <input type="number" name="SelectedMuebles[@mueble.Idmueble]" min="0" max="@mueble.CantidadDisponible"
+                           value="@(Model.HabitacionMuebles?.FirstOrDefault(hm => hm.Idmueble == mueble.Idmueble)?.CantidadUsada ?? 0)" class="form-control" />
+                    <small>Disponible: @mueble.CantidadDisponible</small>
+                </div>
+            }
+        </div>
+        <span id="muebleError" class="text-danger" style="display:none;">Debe seleccionar al menos un mueble.</span>
+
+
+        <div class="form-group">
+            <button type="submit" class="btn">Guardar</button>
+            <a asp-action="Index" class="btn-secondary">Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script>
+    // Validación de que se seleccionó una imagen antes de enviar el formulario (solo si se selecciona una nueva imagen)
+    $("form").submit(function (event) {
+        // Validación de imagen (solo si se selecciona una nueva imagen)
+        var imageFile = $("input[name='ImageFile']").get(0).files.length;
+        if (imageFile === 0 && !$("#ImagenHabitacion").val()) {
+            alert("Debes seleccionar una imagen.");
+            event.preventDefault();
+            return false;
+        }
+
+        // Validación de estado (checkbox)
+        var estadoChecked = $("#Estado").is(":checked");
+        if (!estadoChecked) {
+            alert("Debes confirmar el estado.");
+            event.preventDefault();
+            return false;
+        }
+
+        // Validación de muebles seleccionados
+        var mueblesSeleccionados = false;
+        $("input[name^='SelectedMuebles']").each(function () {
+            if ($(this).val() > 0) {
+                mueblesSeleccionados = true;
+            }
+        });
+
+        if (!mueblesSeleccionados) {
+            $("#muebleError").show();
+            event.preventDefault();
+            return false;
+        }
+
+        return true; // Si todo es válido, permitir el envío del formulario
+    });
+</script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 800px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+        input[type="file"] {
+            padding: 5px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #66bb6a;
+        }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .form-check-label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .form-group span {
+        font-size: 0.9em;
+        color: red;
+    }
+
+    .permissions-container {
+        max-height: 120px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        padding: 15px;
+    }
+
+    .btn {
+        background-color: #66bb6a;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+    }
+
+        .btn:hover {
+            background-color: #57a157;
+        }
+
+    .btn-secondary {
+        background-color: #ccc;
+        color: #333;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-secondary:hover {
+            background-color: #bbb;
+        }
+
+    .muebles-container {
+        margin-bottom: 20px;
+    }
+
+    .mueble-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        .mueble-item input {
+            width: 60px;
+            text-align: center;
+        }
+
+        .mueble-item small {
+            color: #555;
+        }
+</style>

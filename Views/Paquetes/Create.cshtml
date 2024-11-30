@@ -1,0 +1,131 @@
+﻿@model Glamping_Addventure2.Models.Paquete
+
+@{
+    ViewData["Title"] = "Crear";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<hr />
+<div class="container">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+        <!-- Nombre Paquete -->
+        <div class="form-group mb-3">
+            <label asp-for="NombrePaquete" class="control-label">Nombre Paquete</label>
+            <input asp-for="NombrePaquete" class="form-control" placeholder="Ingrese el nombre del paquete" />
+            <span asp-validation-for="NombrePaquete" class="text-danger"></span>
+        </div>
+
+        <!-- Imagen Paquete -->
+        <div class="form-group mb-3">
+            <label asp-for="ImagenPaquete" class="control-label">Imagen del Paquete</label>
+            <input type="file" asp-for="ImagenPaquete" class="form-control" accept="image/*" required />
+            <span asp-validation-for="ImagenPaquete" class="text-danger"></span>
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group mb-3">
+            <label asp-for="Descripcion" class="control-label">Descripción</label>
+            <input asp-for="Descripcion" class="form-control" placeholder="Ingrese una descripción del paquete" />
+            <span asp-validation-for="Descripcion" class="text-danger"></span>
+        </div>
+
+        <!-- Habitaciones -->
+        @if (ViewData["HabitacionesMensaje"] != null)
+        {
+            <div class="form-group mb-3">
+                @ViewData["HabitacionesMensaje"]
+                <p class="text-danger">@ViewData["HabitacionesMensaje2"]</p>
+            </div>
+        }
+        else
+        {
+            <div class="form-group mb-3">
+                <label asp-for="Idhabitacion" class="control-label">Seleccionar Habitación</label>
+                <select asp-for="Idhabitacion" class="form-control" asp-items="ViewBag.Idhabitacion"></select>
+            </div>
+        }
+
+        <!-- Servicios -->
+        @if (ViewData["ServiciosMensaje"] != null)
+        {
+            <div class="form-group mb-3">
+                @ViewData["ServiciosMensaje"]
+                <p class="text-danger">@ViewData["ServiciosMensaje2"]</p>
+            </div>
+        }
+        else
+        {
+            <div class="form-group mb-3">
+                <label asp-for="Idservicio" class="control-label">Seleccionar Servicio</label>
+                <select asp-for="Idservicio" class="form-control" asp-items="ViewBag.Idservicio"></select>
+            </div>
+        }
+
+        <!-- Precio -->
+        <div class="form-group mb-3">
+            <label asp-for="Precio" class="control-label">Precio</label>
+            <input asp-for="Precio" class="form-control" readonly />
+            <span asp-validation-for="Precio" class="text-danger"></span>
+        </div>
+
+        <!-- Calcular Precio Modal Button -->
+        <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#calcularPrecioModal">
+            Calcular Precio
+        </button>
+
+        <!-- Estado -->
+        <div class="form-group mb-3">
+            <label asp-for="Estado" class="control-label">Estado</label>
+            <select asp-for="Estado" class="form-control" asp-items="ViewBag.Estados"></select>
+        </div>
+
+        <!-- Botón Submit -->
+        <div class="form-group">
+            <input type="submit" value="Crear" class="btn btn-primary btn-lg" />
+        </div>
+    </form>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary">
+            Volver a la lista
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            calcularPrecio();
+
+            $('#Idhabitacion, #Idservicio').change(function () {
+                calcularPrecio();
+            });
+
+            function calcularPrecio() {
+                const habitacionId = $('#Idhabitacion').val();
+                const servicioId = $('#Idservicio').val();
+
+                if (!habitacionId || !servicioId) {
+                    $('#Precio').val(0);
+                    return;
+                }
+
+                $.get('/Paquetes/GetCostos', { habitacionId, servicioId }, function (data) {
+                    if (data) {
+                        const precioTotal = data.habitacionCosto + data.servicioCosto;
+                        $('#Precio').val(precioTotal);
+                    }
+                }).fail(function () {
+                    alert('Error al obtener los costos. Por favor, intenta nuevamente.');
+                });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,218 @@
+﻿@model IEnumerable<Glamping_Addventure2.Models.Reserva>
+
+@{
+    ViewData["Title"] = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2 class="text-center" style="color: #1a4a5a;">Reservas</h2> <!-- Título centrado y con color -->
+    <div class="d-flex justify-content-end mb-3">
+        <a asp-action="Create" class="btn btn-success btn-sm">
+            <i class="fas fa-plus"></i> Crear reserva
+        </a>
+    </div>
+</div>
+<!-- Agregar los estilos de DataTables -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+
+
+<table id="myTable" class="table able table-bordered table-striped shadow" id="reservasTable">
+    <thead class="thead-dark">
+        <tr>
+            <th>
+                DocumentoCliente
+            </th>
+            <th>
+                FechaReserva
+            </th>
+
+            <th>
+                MontoTotal
+            </th>
+
+
+            <th>
+                Estado
+            </th>
+            <th>
+                MetodoPago
+            </th>
+            <th>
+                Acciones
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NroDocumentoClienteNavigation.NroDocumento)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaReserva)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.MontoTotal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdEstadoReservaNavigation.NombreEstadoReserva)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MetodoPagoNavigation.NomMetodoPago)
+                <td>
+                    <a asp-controller="Abonoes" asp-action="Index" asp-route-idReserva="@item.IdReserva" class="btn btn-primary"><i class="fa-solid fa-wallet"></i></a>
+                    <a class="btn btn-primary"><i class="fa-solid fa-shop-slash"></i></a>
+
+                    <a asp-action="Edit" asp-route-id="@item.IdReserva"><i class="fa-solid fa-pencil"></i></a>
+                    <a asp-action="Details" asp-route-id="@item.IdReserva"><i class="fa-solid fa-eye"></i></a>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Incluir los scripts de DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#reservasTable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json" // Para traducir DataTables al español
+            }
+        });
+    });
+</script>
+<style>
+    /* Fondo del sitio */
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+        color: #1a4a5a;
+    }
+
+    /* Estilos para el contenedor */
+    .container {
+        max-width: 4000px;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tabla */
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        background-color: #f8f9fa; /* Fondo claro para la tabla */
+    }
+
+    /* Encabezado de la tabla */
+    th {
+        background-color: #1a4a5a; /* Verde oscuro para encabezado */
+        color: #000000; /* Texto negro en el encabezado */
+        font-weight: bold;
+        padding: 12px;
+        border: 1px solid #dcdcdc; /* Borde gris claro */
+    }
+
+    /* Celdas del cuerpo de la tabla */
+    td {
+        background-color: #ffffff; /* Fondo blanco */
+        color: #1a4a5a; /* Color de texto verde oscuro */
+        padding: 12px;
+        text-align: center; /* Centrar el contenido de las celdas */
+        border: 1px solid #e3e3e3; /* Bordes suaves para las celdas */
+        transition: background-color 0.3s ease;
+    }
+
+    /* Estilo de filas alternas */
+    tbody tr:nth-child(odd) td {
+        background-color: #e9f7ec; /* Verde claro para filas alternas */
+    }
+
+    /* Hover para filas */
+    tbody tr:hover td {
+        background-color: #c8e6c9; /* Fondo verde suave en hover */
+    }
+
+    /* Botones de acción */
+    .btn {
+        font-weight: bold;
+        color: #ffffff;
+        border-radius: 5px;
+        padding: 5px 10px;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+    }
+
+    .btn:hover {
+        opacity: 0.85; /* Opacidad en hover */
+    }
+
+    /* Checkbox deslizante */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 24px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+    input:checked + .slider {
+        background-color: #28a745; /* Verde para toggle activado */
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+</style>
+
+

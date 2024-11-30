@@ -1,0 +1,106 @@
+﻿@model Glamping_Addventure2.Models.Abono
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>Abono</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label>ID Reserva</label>
+                <input type="text" class="form-control" value="@ViewData["IdReserva"]" readonly />
+                <input type="hidden" asp-for="Idreserva" value="@ViewData["IdReserva"]" />
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaAbono" class="control-label"></label>
+                <input asp-for="FechaAbono" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
+                <span asp-validation-for="FechaAbono" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ValorDeuda" class="control-label"></label>
+                <input asp-for="ValorDeuda" class="form-control" id="ValorDeuda" value="@ViewData["MontoTotal"]" readonly />
+                <span asp-validation-for="ValorDeuda" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Porcentaje" class="control-label"></label>
+                <input asp-for="Porcentaje" class="form-control" id="Porcentaje" readonly />
+                <span asp-validation-for="Porcentaje" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pendiente" class="control-label"></label>
+                <input asp-for="Pendiente" class="form-control" id="Pendiente" readonly />
+                <span asp-validation-for="Pendiente" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CantAbono" class="control-label"></label>
+                <input asp-for="CantAbono" class="form-control" id="CantAbono" />
+                <span asp-validation-for="CantAbono" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Comprobante</label>
+                <input type="file" name="comprobante" class="form-control" id="comprobanteInput" onchange="previewImage(event)" />
+                <img id="comprobantePreview" src="#" alt="Vista previa" style="display:none; max-height:200px; margin-top:10px;" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Estado" class="control-label" hidden></label>
+                <input asp-for="Estado" class="form-control" value="0" readonly hidden />
+                <span asp-validation-for="Estado" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" asp-route-idReserva="@ViewData["IdReserva"]" class="btn btn-secondary">Cancelar</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('comprobantePreview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // Función para calcular porcentaje y pendiente
+        function calcularPorcentajeYPendiente() {
+            // Obtén los elementos por ID generados por Razor
+            const valorDeudaElement = document.getElementById("ValorDeuda");
+            const cantAbonoElement = document.getElementById("CantAbono");
+            const porcentajeElement = document.getElementById("Porcentaje");
+            const pendienteElement = document.getElementById("Pendiente");
+
+            // Asegúrate de que los elementos existen y obtén sus valores
+            const valorDeuda = parseFloat(valorDeudaElement?.value) || 0;
+            const cantAbono = parseFloat(cantAbonoElement?.value) || 0;
+
+            // Calcula porcentaje y pendiente
+            const porcentaje = (cantAbono / valorDeuda) * 100;
+            const pendiente = valorDeuda - cantAbono;
+
+            // Actualiza los campos de porcentaje y pendiente
+            if (porcentajeElement) porcentajeElement.value = porcentaje.toFixed(2);
+            if (pendienteElement) pendienteElement.value = pendiente.toFixed(2);
+        }
+
+        // Vincula el evento input al campo CantAbono
+        document.getElementById("CantAbono").addEventListener("input", calcularPorcentajeYPendiente);
+    </script>
+}

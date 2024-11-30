@@ -1,0 +1,110 @@
+﻿@model Glamping_Addventure2.Models.Role
+
+@{
+    ViewData["Title"] = "Eliminar Rol";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
+    <style>
+        /* Estilos principales */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+        }
+
+        .delete-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .btn-danger {
+            background-color: #d9534f;
+            color: #fff;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="delete-box">
+        <p>¿Deseas eliminar el rol "<strong>@Model.Nombre</strong>"? Esta acción no se puede deshacer.</p>
+
+        @if (ViewBag.HasUsers)
+        {
+            <!-- Modal cuando el rol está asociado a usuarios -->
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#roleAssociatedModal">
+                Eliminar
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        }
+        else
+        {
+            <!-- Si no está asociado a usuarios, procedemos con la eliminación -->
+            <form asp-action="Delete" method="post" id="deleteForm">
+                <input type="hidden" asp-for="Idrol" />
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Eliminar</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </form>
+        }
+    </div>
+
+    <!-- Modal cuando el rol está asociado a usuarios -->
+    <div class="modal fade" id="roleAssociatedModal" tabindex="-1" aria-labelledby="roleAssociatedModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roleAssociatedModalLabel">No se puede eliminar el rol</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Este rol está asociado a uno o más usuarios y no puede ser eliminado.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para la eliminación -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar este rol? Esta acción no se puede deshacer.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Submit form when delete is confirmed
+        document.getElementById("confirmDeleteButton").addEventListener("click", function () {
+            document.getElementById("deleteForm").submit();
+        });
+    </script>
+</body>
+</html>

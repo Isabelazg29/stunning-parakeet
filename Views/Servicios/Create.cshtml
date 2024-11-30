@@ -1,0 +1,183 @@
+﻿@model Glamping_Addventure2.Models.Servicio
+
+@{
+    ViewData["Title"] = "Glamping Addventure";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Crear Servicio</h1>
+<div class="container">
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="NombreServicio">Nombre del servicio</label>
+            <input asp-for="NombreServicio" />
+            <span asp-validation-for="NombreServicio" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Descripcion">Descripcion</label>
+            <textarea asp-for="Descripcion"></textarea>
+            <span asp-validation-for="Descripcion" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Duracion">Duracion</label>
+            <input asp-for="Duracion" />
+            <span asp-validation-for="Duracion" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="CantidadMaximaPersonas">Cantidad Maxima de Personas</label>
+            <input asp-for="CantidadMaximaPersonas" />
+            <span asp-validation-for="CantidadMaximaPersonas" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Costo">Costo</label>
+            <input asp-for="Costo" />
+            <span asp-validation-for="Costo" class="text-danger"></span>
+        </div>
+        <div class="form-group form-check">
+            <input class="form-check-input" type="checkbox"
+                   checked="@(Model?.Estado ?? false)" />
+            <label asp-for="Estado" class="form-check-label">Confirmar Estado</label>
+            <span asp-validation-for="Estado" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn">Crear</button>
+            <a asp-action="Index" class="btn-secondary">Volver</a>
+        </div>
+    </form>
+
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 800px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+        input[type="file"] {
+            padding: 5px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #66bb6a;
+        }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .form-check-label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .form-group span {
+        font-size: 0.9em;
+        color: red;
+    }
+
+    .permissions-container {
+        max-height: 120px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        padding: 15px;
+    }
+
+    .btn {
+        background-color: #66bb6a;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+    }
+
+        .btn:hover {
+            background-color: #57a157;
+        }
+
+    .btn-secondary {
+        background-color: #ccc;
+        color: #333;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none; /* Elimina el subrayado */
+        display: inline-block; /* Asegura que se comporte como un botón */
+    }
+
+        .btn-secondary:hover {
+            background-color: #bbb;
+        }
+
+    .muebles-container {
+        margin-bottom: 20px;
+    }
+
+    .mueble-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        .mueble-item input {
+            width: 60px;
+            text-align: center;
+        }
+
+        .mueble-item small {
+            color: #555;
+        }
+</style>

@@ -1,0 +1,23 @@
+﻿@model Glamping_Addventure2.Models.Permiso
+
+<h2>Crear Permiso</h2>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>Nombre:</label>
+        <input asp-for="NombrePermisos" />
+        <span asp-validation-for="NombrePermisos"></span>
+    </div>
+    <div>
+        <label>Estado:</label>
+        <input asp-for="EstadoPermisos" />
+        <span asp-validation-for="EstadoPermisos"></span>
+    </div>
+    <div>
+        <label>Descripción:</label>
+        <textarea asp-for="Descripcion"></textarea>
+        <span asp-validation-for="Descripcion"></span>
+    </div>
+    <button type="submit">Crear</button>
+</form>
+<a asp-action="Index">Volver</a>
